@@ -83,7 +83,7 @@
 
 [[projects]]
   digest = "1:3e3e785afe384b4bfa1e9c648472f5e8d96597331c1ec9bf7d6e7eb2fdb42730"
-  name = "gopkg.in/alecthomas/kingpin.v2"
+  name = "github.com/alecthomas/kingpin/v2"
   packages = ["."]
   pruneopts = "UT"
   revision = "21551c2a6259a8145110ca80a36e25c9d7624032"
@@ -103,7 +103,7 @@
     "github.com/zach-klippenstein/goadb/util",
     "golang.org/x/net/context",
     "golang.org/x/net/trace",
-    "gopkg.in/alecthomas/kingpin.v2",
+    "github.com/alecthomas/kingpin/v2",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
