@@ -1,6 +1,6 @@
 /*
 Another FUSE filesystem that can mount any device visible to your adb server.
-Uses github.com/zach-klippenstein/goadb to interface with the server directly
+Uses github.com/exidler/goadb to interface with the server directly
 instead of calling out to the adb client program.
 
 See package adbfs for the filesystem implementation.
@@ -10,19 +10,20 @@ package main
 import (
 	"errors"
 	"fmt"
+	adb "github.com/exidler/goadb"
+	"github.com/hanwen/go-fuse/v2/fuse/nodefs"
 	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"time"
 
-	"github.com/hanwen/go-fuse/fuse"
-	"github.com/hanwen/go-fuse/fuse/nodefs"
-	"github.com/hanwen/go-fuse/fuse/pathfs"
-	fs "github.com/zach-klippenstein/adbfs"
-	"github.com/zach-klippenstein/adbfs/internal/cli"
-	. "github.com/zach-klippenstein/adbfs/internal/util"
-	"github.com/zach-klippenstein/goadb"
+	fs "github.com/exidler/adbfs"
+	"github.com/exidler/adbfs/internal/cli"
+	. "github.com/exidler/adbfs/internal/util"
+	"github.com/hanwen/go-fuse/v2/fuse"
+	"github.com/hanwen/go-fuse/v2/fuse/pathfs"
 )
 
 const StartTimeout = 5 * time.Second
@@ -45,10 +46,6 @@ func init() {
 func main() {
 	cli.Initialize("adbfs", &config.BaseConfig)
 
-	if config.DeviceSerial == "" {
-		cli.Log.Fatalln("Device serial must be specified. Run with -h.")
-	}
-
 	if config.Mountpoint == "" {
 		cli.Log.Fatalln("Mountpoint must be specified. Run with -h.")
 	}
@@ -61,10 +58,16 @@ func main() {
 	}
 
 	cache := initializeCache(config.CacheTtl)
-	adbServer, err := adb.NewServer(config.ServerConfig())
+	adbServer, err := adb.NewWithConfig(config.ServerConfig())
 	if err != nil {
 		cli.Log.Fatal(err)
 	}
+
+	config.DeviceSerial = resolveSerial(adbServer, config.DeviceSerial)
+	if config.DeviceSerial == "" {
+		cli.Log.Fatalln("Device serial must be specified. Run with -h.")
+	}
+	cli.Log.Infoln("Using device:", config.DeviceSerial)
 
 	fs := initializeFileSystem(adbServer, absoluteMountpoint, cache)
 	go watchForDeviceDisconnected(adbServer, config.DeviceSerial)
@@ -102,12 +105,36 @@ func main() {
 	}
 }
 
+func resolveSerial(adbServer *adb.Adb, serial string) string {
+	devices, err := adbServer.ListDevices()
+	if err != nil {
+		cli.Log.Fatal(err)
+	}
+
+	for _, dev := range devices {
+		var ds string
+		if dev.IsUsb() {
+			ds = "usb:"
+		} else {
+			ds = "tcp:"
+		}
+		ds = ds + dev.Serial
+		cli.Log.Info("device ", ds, ": ", dev.DeviceInfo)
+
+		if strings.Index(ds, serial) >= 0 {
+			return dev.Serial
+		}
+	}
+
+	return ""
+}
+
 func initializeCache(ttl time.Duration) fs.DirEntryCache {
 	cli.Log.Infoln("stat cache ttl:", ttl)
 	return fs.NewDirEntryCache(ttl)
 }
 
-func initializeFileSystem(server adb.Server, mountpoint string, cache fs.DirEntryCache) *pathfs.PathNodeFs {
+func initializeFileSystem(server *adb.Adb, mountpoint string, cache fs.DirEntryCache) *pathfs.PathNodeFs {
 	clientFactory := fs.NewCachingDeviceClientFactory(cache,
 		fs.NewGoadbDeviceClientFactory(server, config.DeviceSerial, handleDeviceDisconnected))
 
@@ -127,8 +154,8 @@ func initializeFileSystem(server adb.Server, mountpoint string, cache fs.DirEntr
 	return pathfs.NewPathNodeFs(fsImpl, nil)
 }
 
-func watchForDeviceDisconnected(server adb.Server, serial string) {
-	watcher := adb.NewDeviceWatcher(server)
+func watchForDeviceDisconnected(server *adb.Adb, serial string) {
+	watcher := server.NewDeviceWatcher()
 	defer watcher.Shutdown()
 
 	for {

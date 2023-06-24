@@ -2,10 +2,9 @@ package cli
 
 import (
 	"fmt"
+	"github.com/alecthomas/kingpin/v2"
 	"os"
 	"os/exec"
-
-	"github.com/alecthomas/kingpin/v2"
 )
 
 type AutomountConfig struct {

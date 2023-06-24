@@ -2,8 +2,6 @@ package adbfs
 
 import (
 	"os"
-
-	"github.com/hanwen/go-fuse/fuse"
 )
 
 const (
@@ -20,13 +18,13 @@ const (
 // Helper methods around the flags passed to the Open call.
 type FileOpenFlags uint32
 
-func (f FileOpenFlags) String() string {
-	return fuse.FlagString(fuse.OpenFlagNames, int64(f), "")
-}
-
-func (f FileOpenFlags) GoString() string {
-	return f.String()
-}
+//func (f FileOpenFlags) String() string {
+//	return fuse.FlagString(fuse.OpenFlagNames, int64(f), "")
+//}
+//
+//func (f FileOpenFlags) GoString() string {
+//	return f.String()
+//}
 
 func (f FileOpenFlags) CanRead() bool {
 	// O_RDONLY is just 0, so we can't do Contains(O_RDONLY).

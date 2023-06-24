@@ -2,14 +2,14 @@ package adbfs
 
 import (
 	"bytes"
+	"github.com/exidler/goadb"
 	"testing"
 	"time"
 
 	. "github.com/exidler/adbfs/internal/util"
-	"github.com/hanwen/go-fuse/fuse"
-	"github.com/hanwen/go-fuse/fuse/nodefs"
+	"github.com/hanwen/go-fuse/v2/fuse"
+	"github.com/hanwen/go-fuse/v2/fuse/nodefs"
 	"github.com/stretchr/testify/assert"
-	"github.com/zach-klippenstein/goadb/util"
 )
 
 func TestAdbFile_InnerFile(t *testing.T) {
@@ -57,7 +57,7 @@ func TestAdbFile_Fsync(t *testing.T) {
 	assert.Equal(t, "world", fileBuf.Contents())
 
 	// Failure.
-	fileBuf.Client.(*delegateDeviceClient).openRead = openReadError(util.Errorf(util.NetworkError, ""))
+	fileBuf.Client.(*delegateDeviceClient).openRead = openReadError(adb.Errorf(adb.NetworkError, ""))
 	status = file.Fsync(0)
 	assert.Equal(t, fuse.EIO, status)
 	assert.Equal(t, "world", fileBuf.Contents())

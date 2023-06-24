@@ -2,12 +2,12 @@ package adbfs
 
 import (
 	"fmt"
+	adb "github.com/exidler/goadb"
 	"os"
 	"testing"
 
-	"github.com/hanwen/go-fuse/fuse"
+	"github.com/hanwen/go-fuse/v2/fuse"
 	"github.com/stretchr/testify/assert"
-	"github.com/zach-klippenstein/goadb"
 )
 
 func TestGetAttr_Root(t *testing.T) {

@@ -2,6 +2,7 @@ package adbfs
 
 import (
 	"bytes"
+	adb "github.com/exidler/goadb"
 	"io"
 	"io/ioutil"
 	"os"
@@ -10,8 +11,6 @@ import (
 
 	. "github.com/exidler/adbfs/internal/util"
 	"github.com/stretchr/testify/assert"
-	"github.com/zach-klippenstein/goadb"
-	"github.com/zach-klippenstein/goadb/util"
 )
 
 func TestNewFileBuffer_RdonlyExistSuccess(t *testing.T) {
@@ -56,7 +55,7 @@ func TestNewFileBuffer_RdonlyNoExistFailure(t *testing.T) {
 			stat: statFiles(),
 		},
 	}, &LogEntry{})
-	assert.True(t, util.HasErrCode(err, util.FileNoExistError))
+	assert.True(t, adb.HasErrCode(err, adb.FileNoExistError))
 	assert.Nil(t, file)
 }
 
@@ -92,10 +91,10 @@ func TestFileBuffer_LoadFromDevice(t *testing.T) {
 	assert.Equal(t, "world", file.Contents())
 
 	// Failure.
-	dev.openRead = openReadError(util.Errorf(util.NetworkError, "fail"))
+	dev.openRead = openReadError(adb.Errorf(adb.NetworkError, "fail"))
 	err = file.loadFromDevice(&LogEntry{})
 	assert.Equal(t, `NetworkError: error opening file stream on device
-caused by NetworkError: fail`, util.ErrorWithCauseChain(err))
+caused by NetworkError: fail`, adb.ErrorWithCauseChain(err))
 	assert.Equal(t, "world", file.Contents())
 }
 
@@ -125,10 +124,10 @@ func TestFileBuffer_SaveToDevice(t *testing.T) {
 	assert.Equal(t, "hello world", buf.String())
 
 	// Failure.
-	dev.openWrite = openWriteError(util.Errorf(util.NetworkError, "fail"))
+	dev.openWrite = openWriteError(adb.Errorf(adb.NetworkError, "fail"))
 	err = file.saveToDevice(&LogEntry{})
 	assert.Equal(t, `NetworkError: error opening file stream on device
-caused by NetworkError: fail`, util.ErrorWithCauseChain(err))
+caused by NetworkError: fail`, adb.ErrorWithCauseChain(err))
 	assert.Equal(t, "hello world", file.Contents())
 	assert.Equal(t, "hello world", buf.String())
 }
@@ -225,7 +224,7 @@ func TestNewFileBuffer_PermsFromCorrectSource(t *testing.T) {
 			Client: &delegateDeviceClient{
 				stat: func(path string) (*adb.DirEntry, error) {
 					if perms.StatResult == NoExist {
-						return nil, util.Errorf(util.FileNoExistError, "fail")
+						return nil, adb.Errorf(adb.FileNoExistError, "fail")
 					}
 					return &adb.DirEntry{
 						Name: "/file",

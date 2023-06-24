@@ -2,13 +2,13 @@ package adbfs
 
 import (
 	"fmt"
+	"github.com/exidler/goadb"
 	"io"
 	"os"
 	"time"
 
-	"github.com/hanwen/go-fuse/fuse"
-	"github.com/hanwen/go-fuse/fuse/nodefs"
-	"github.com/zach-klippenstein/goadb/util"
+	"github.com/hanwen/go-fuse/v2/fuse"
+	"github.com/hanwen/go-fuse/v2/fuse/nodefs"
 )
 
 const (
@@ -129,7 +129,7 @@ func (f *AdbFile) Write(data []byte, off int64) (uint32, fuse.Status) {
 	if err == nil {
 		err = f.FileBuffer.SyncIfTooDirty(logEntry)
 		if err != nil {
-			err = util.WrapErrf(err, "write successful, but error syncing after write")
+			err = adb.WrapErrf(err, "write successful, but error syncing after write")
 		}
 	}
 

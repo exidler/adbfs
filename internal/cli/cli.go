@@ -3,12 +3,12 @@ package cli
 
 import (
 	"fmt"
+	"github.com/alecthomas/kingpin/v2"
 	"html/template"
 	"log"
 	"net"
 	"net/http"
 
-	"github.com/alecthomas/kingpin/v2"
 	"github.com/sirupsen/logrus"
 )
 
@@ -49,7 +49,7 @@ func initializeDebugServer(baseConfig *BaseConfig) {
 
 	listener, err := net.ListenTCP("tcp", &net.TCPAddr{
 		IP:   net.ParseIP("127.0.0.1"),
-		Port: 0, // Bind to a random port.
+		Port: 63123, // Bind to a random port.
 	})
 	if err != nil {
 		Log.Errorln("error starting debug server:", err)

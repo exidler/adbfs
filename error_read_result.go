@@ -1,6 +1,6 @@
 package adbfs
 
-import "github.com/hanwen/go-fuse/fuse"
+import "github.com/hanwen/go-fuse/v2/fuse"
 
 // readError returns a ReadResult that will report 0 size and status, and then logs and returns status.
 func readError(err error, logEntry *LogEntry) (fuse.ReadResult, fuse.Status) {

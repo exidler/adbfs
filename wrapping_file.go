@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hanwen/go-fuse/fuse"
-	"github.com/hanwen/go-fuse/fuse/nodefs"
+	"github.com/hanwen/go-fuse/v2/fuse"
+	"github.com/hanwen/go-fuse/v2/fuse/nodefs"
 )
 
 // WrappingFile is an implementation of nodefs.File that invokes a callback after

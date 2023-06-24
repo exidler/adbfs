@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/zach-klippenstein/goadb"
 )
 
 type delegateDirEntryCache struct {

@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/exidler/goadb"
 	"os"
 	"path"
 	"path/filepath"
@@ -14,11 +15,9 @@ import (
 	"time"
 
 	"github.com/exidler/adbfs/internal/cli"
-	"github.com/hanwen/go-fuse/fuse"
-	"github.com/hanwen/go-fuse/fuse/nodefs"
-	"github.com/hanwen/go-fuse/fuse/pathfs"
-	"github.com/zach-klippenstein/goadb"
-	"github.com/zach-klippenstein/goadb/util"
+	"github.com/hanwen/go-fuse/v2/fuse"
+	"github.com/hanwen/go-fuse/v2/fuse/nodefs"
+	"github.com/hanwen/go-fuse/v2/fuse/pathfs"
 )
 
 // 64 symlinks ought to be deep enough for anybody.
@@ -138,13 +137,13 @@ func readLinkRecursively(device DeviceClient, path string, logEntry *LogEntry) (
 		fmt.Fprintln(&result, path)
 		path, err = readLink(device, path)
 		if err != nil {
-			return "", nil, util.WrapErrf(err, "reading link: %s", result.String())
+			return "", nil, adb.WrapErrf(err, "reading link: %s", result.String())
 		}
 
 		fmt.Fprintln(&result, " ➜", path)
 		entry, err = device.Stat(path, logEntry)
 		if err != nil {
-			return "", nil, util.WrapErrf(err, "stating %s: %s", path, result.String())
+			return "", nil, adb.WrapErrf(err, "stating %s: %s", path, result.String())
 		}
 	}
 

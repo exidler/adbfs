@@ -1,6 +1,7 @@
 package adbfs
 
 import (
+	adb "github.com/exidler/goadb"
 	"io"
 	"os"
 	"sync"
@@ -8,8 +9,6 @@ import (
 	"time"
 
 	. "github.com/exidler/adbfs/internal/util"
-	"github.com/zach-klippenstein/goadb"
-	"github.com/zach-klippenstein/goadb/util"
 )
 
 const DefaultFilePermissions = os.FileMode(0664)
@@ -80,7 +79,7 @@ func (f *FileBuffer) initialize(flags FileOpenFlags, logEntry *LogEntry) (err er
 	}
 
 	currentPerms, err := f.getFilePermissions(logEntry)
-	if util.HasErrCode(err, util.FileNoExistError) {
+	if adb.HasErrCode(err, adb.FileNoExistError) {
 		// The file doesn't exist.
 		if !flags.Contains(O_CREATE) {
 			// If the file doesn't exist and we can't create, we can't do anything.
@@ -120,7 +119,7 @@ func (f *FileBuffer) initialize(flags FileOpenFlags, logEntry *LogEntry) (err er
 func (f *FileBuffer) getFilePermissions(logEntry *LogEntry) (os.FileMode, error) {
 	entry, err := f.Client.Stat(f.Path, logEntry)
 	if err != nil {
-		return 0, util.WrapErrf(err, "error reading file permissions")
+		return 0, adb.WrapErrf(err, "error reading file permissions")
 	}
 	return entry.Mode.Perm(), nil
 }
@@ -221,13 +220,13 @@ func (f *FileBuffer) RefCount() int {
 func (f *FileBuffer) loadFromDevice(logEntry *LogEntry) error {
 	stream, err := f.Client.OpenRead(f.Path, logEntry)
 	if err != nil {
-		return util.WrapErrf(err, "error opening file stream on device")
+		return adb.WrapErrf(err, "error opening file stream on device")
 	}
 	defer stream.Close()
 
 	n, err := f.buffer.ReadFrom(stream)
 	if err != nil {
-		return util.WrapErrf(err, "error reading data from file (after reading %d bytes)", n)
+		return adb.WrapErrf(err, "error reading data from file (after reading %d bytes)", n)
 	}
 	return nil
 }
@@ -235,7 +234,7 @@ func (f *FileBuffer) loadFromDevice(logEntry *LogEntry) error {
 func (f *FileBuffer) saveToDevice(logEntry *LogEntry) error {
 	writer, err := f.Client.OpenWrite(f.Path, f.Perms, adb.MtimeOfClose, logEntry)
 	if err != nil {
-		return util.WrapErrf(err, "error opening file stream on device")
+		return adb.WrapErrf(err, "error opening file stream on device")
 	}
 	// Make sure we close the writer if we return early, but we still want to check
 	// for errors in the happy case.
@@ -244,11 +243,11 @@ func (f *FileBuffer) saveToDevice(logEntry *LogEntry) error {
 	// TODO Optimize by using a buffer that is wire.SyncMaxChunkSize.
 	n, err := f.buffer.WriteTo(writer)
 	if err != nil {
-		return util.WrapErrf(err, "writing data to file: len(buffer)=%d, n=%d", f.buffer.Len(), n)
+		return adb.WrapErrf(err, "writing data to file: len(buffer)=%d, n=%d", f.buffer.Len(), n)
 	}
 
 	if err := writer.Close(); err != nil {
-		return util.WrapErrf(err, "closing file stream")
+		return adb.WrapErrf(err, "closing file stream")
 	}
 
 	// If there were any errors, the file may not have been written on device at all, so we're still

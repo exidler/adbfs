@@ -3,11 +3,11 @@ package adbfs
 import (
 	"bytes"
 	"fmt"
+	"github.com/exidler/goadb"
 	"os"
 
-	"github.com/hanwen/go-fuse/fuse"
-	"github.com/hanwen/go-fuse/fuse/nodefs"
-	"github.com/zach-klippenstein/goadb"
+	"github.com/hanwen/go-fuse/v2/fuse"
+	"github.com/hanwen/go-fuse/v2/fuse/nodefs"
 )
 
 // asFuseDirEntries reads directory entries from a goadb DirEntries and returns them as a

@@ -2,11 +2,10 @@ package cli
 
 import (
 	"fmt"
+	"github.com/exidler/goadb"
 	"os"
 	"path/filepath"
 	"regexp"
-
-	"github.com/zach-klippenstein/goadb"
 )
 
 // Permissions for mountpoint directories.

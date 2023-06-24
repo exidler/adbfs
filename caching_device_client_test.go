@@ -1,12 +1,11 @@
 package adbfs
 
 import (
+	adb "github.com/exidler/goadb"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/zach-klippenstein/goadb"
-	"github.com/zach-klippenstein/goadb/util"
 )
 
 func TestNewCachedDirEntries(t *testing.T) {
@@ -30,7 +29,7 @@ func TestCachingDeviceClientStat_Miss(t *testing.T) {
 				if path == "/foo/bar" {
 					return &adb.DirEntry{Name: "baz"}, nil
 				}
-				return nil, util.Errorf(util.FileNoExistError, "")
+				return nil, adb.Errorf(adb.FileNoExistError, "")
 			},
 		},
 		Cache: &delegateDirEntryCache{
@@ -75,7 +74,7 @@ func TestCachingDeviceClientStat_HitNotExists(t *testing.T) {
 	}
 
 	_, err := client.Stat("/foo/bar", &LogEntry{})
-	assert.True(t, util.HasErrCode(err, util.FileNoExistError))
+	assert.True(t, adb.HasErrCode(err, adb.FileNoExistError))
 }
 
 func TestCachingDeviceClientStat_Root(t *testing.T) {
@@ -85,7 +84,7 @@ func TestCachingDeviceClientStat_Root(t *testing.T) {
 				if path == "/" {
 					return &adb.DirEntry{Name: "/"}, nil
 				}
-				return nil, util.Errorf(util.FileNoExistError, "")
+				return nil, adb.Errorf(adb.FileNoExistError, "")
 			},
 		},
 		Cache: &delegateDirEntryCache{

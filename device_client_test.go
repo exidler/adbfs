@@ -1,6 +1,7 @@
 package adbfs
 
 import (
+	adb "github.com/exidler/goadb"
 	"io"
 	"io/ioutil"
 	"os"
@@ -8,9 +9,6 @@ import (
 	"time"
 
 	"bytes"
-
-	"github.com/zach-klippenstein/goadb"
-	"github.com/zach-klippenstein/goadb/util"
 )
 
 type delegateDeviceClient struct {
@@ -48,7 +46,7 @@ func statFiles(entries ...*adb.DirEntry) func(string) (*adb.DirEntry, error) {
 				return entry, nil
 			}
 		}
-		return nil, util.Errorf(util.FileNoExistError, "%s", path)
+		return nil, adb.Errorf(adb.FileNoExistError, "%s", path)
 	}
 }
 

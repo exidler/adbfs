@@ -1,13 +1,11 @@
 package adbfs
 
 import (
+	"github.com/exidler/goadb"
 	"io"
 	"os"
 	"path"
 	"time"
-
-	"github.com/zach-klippenstein/goadb"
-	"github.com/zach-klippenstein/goadb/util"
 )
 
 type CachingDeviceClient struct {
@@ -60,7 +58,7 @@ func (c *CachingDeviceClient) Stat(name string, log *LogEntry) (*adb.DirEntry, e
 
 		// Cached directory list doesn't have name, so as far as we're concerned the
 		// file doesn't exist.
-		return nil, util.Errorf(util.FileNoExistError,
+		return nil, adb.Errorf(adb.FileNoExistError,
 			"name '%s' does not exist in cached directory listing", base)
 	}
 	log.CacheUsed(false)

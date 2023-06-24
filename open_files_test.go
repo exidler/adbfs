@@ -1,10 +1,10 @@
 package adbfs
 
 import (
+	"github.com/exidler/goadb"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/zach-klippenstein/goadb"
 )
 
 func TestOpenFiles_GetOrLoadSameFileSeparate(t *testing.T) {

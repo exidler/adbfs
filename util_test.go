@@ -3,13 +3,13 @@ package adbfs
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/exidler/goadb"
 	"testing"
 
 	"github.com/exidler/adbfs/internal/cli"
-	"github.com/hanwen/go-fuse/fuse/nodefs"
+	"github.com/hanwen/go-fuse/v2/fuse/nodefs"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
-	"github.com/zach-klippenstein/goadb"
 )
 
 func init() {

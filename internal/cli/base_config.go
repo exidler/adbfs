@@ -2,10 +2,11 @@ package cli
 
 import (
 	"fmt"
+	"github.com/alecthomas/kingpin/v2"
+	adb "github.com/exidler/goadb"
 	"strconv"
 	"time"
 
-	"github.com/alecthomas/kingpin/v2"
 	"github.com/sirupsen/logrus"
 )
 

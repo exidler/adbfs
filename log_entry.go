@@ -2,13 +2,13 @@ package adbfs
 
 import (
 	"fmt"
+	"github.com/exidler/goadb"
 	"os"
 	"syscall"
 	"time"
 
 	"github.com/exidler/adbfs/internal/cli"
 	"github.com/sirupsen/logrus"
-	"github.com/zach-klippenstein/goadb/util"
 	"golang.org/x/net/trace"
 )
 
@@ -76,7 +76,7 @@ func StartFileOperation(name, path string, args string) *LogEntry {
 // ErrorMsg records a failure result.
 // Panics if called more than once.
 func (r *LogEntry) ErrorMsg(err error, msg string, args ...interface{}) {
-	r.Error(fmt.Errorf("%s: %v", fmt.Sprintf(msg, args...), util.ErrorWithCauseChain(err)))
+	r.Error(fmt.Errorf("%s: %v", fmt.Sprintf(msg, args...), adb.ErrorWithCauseChain(err)))
 }
 
 // Error records a failure result.
@@ -152,7 +152,7 @@ func (r *LogEntry) finishOperation(suppress bool) {
 	}
 
 	if r.err != nil {
-		cli.Log.Errorln(util.ErrorWithCauseChain(r.err))
+		cli.Log.Errorln(adb.ErrorWithCauseChain(r.err))
 	}
 
 	r.logTrace(entry)
@@ -171,7 +171,7 @@ func (r *LogEntry) logTrace(entry *logrus.Entry) {
 
 	if r.err != nil {
 		r.trace.SetError()
-		r.trace.LazyPrintf("%s", util.ErrorWithCauseChain(r.err))
+		r.trace.LazyPrintf("%s", adb.ErrorWithCauseChain(r.err))
 	}
 	r.trace.Finish()
 }
