@@ -30,7 +30,7 @@ func RegisterAutomountFlags(config *AutomountConfig) {
 
 	kingpin.Flag(MountRootFlag,
 		"Directory in which to mount devices.").
-		Short('r').
+		Short('p').
 		PlaceHolder("/mnt").
 		ExistingDirVar(&config.MountRoot)
 	kingpin.Flag("adbfs",
